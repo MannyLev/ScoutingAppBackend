@@ -13,10 +13,14 @@ app.post("/addTeamMatch", async (req, res) => {
 
   // Creates a new team performance based on the input given in the json file from the scout
   // The json file will be converted from the qr code and fed to this as input
-  const teamPerf = await prisma.TeamPerformance.create({
+
+  // TODO: Create a parse schema thing that separates json into int, double, and string
+  const teamPerf = await prisma.teamPerformance.create({
     data: {
       teamNumber: json.teamNumber,
-      scoutInput: json.scoutInput,
+      intScoutInput: json.scoutInput,
+      doubleScoutInput: json.scoutInput,
+      stringScoutInput: json.scoutInput
     },
   });
 
@@ -24,7 +28,7 @@ app.post("/addTeamMatch", async (req, res) => {
   // TODO: See if tournament ID needs to be an input
 
   // Sees if match exists
-  const matchExists = (await prisma.Match.findMany({
+  const matchExists = (await prisma.match.findMany({
     where: {
       tournament: { title: json.tournamentName },
       matchNumber: json.scoutInput.matchNumber,
@@ -33,7 +37,7 @@ app.post("/addTeamMatch", async (req, res) => {
 
   // Creates one if it doesn't
   if ((matchExists == null) || (matchExists == undefined)) {
-    const matchCreation = await prisma.Match.create({
+    const matchCreation = await prisma.match.create({
       data: {
         matchNumber: json.scoutInput.matchNumber,
         teams: {
@@ -43,19 +47,21 @@ app.post("/addTeamMatch", async (req, res) => {
     });
 
     // Sees if tournament exists
-    const tournamentExists = (await prisma.Tournament.findMany({
+    const tournamentExists = (await prisma.tournament.findMany({
       where: {
         title: json.tournamentName,
       },
     }))[0];
 
     if ((tournamentExists == null) || (tournamentExists == undefined)) {
-      const tournamentCreation = await prisma.Tournament.create({
+      const tournamentCreation = await prisma.tournament.create({
         data: {
           title: json.tournamentName,
+          schema: [], //!! TODO: fix this to valid schema
+        matches: undefined
         }
       });
-      const matchUpdateTournament = await prisma.Match.update({
+      const matchUpdateTournament = await prisma.match.update({
         where: {
           id: matchCreation.id,
         },
@@ -65,7 +71,7 @@ app.post("/addTeamMatch", async (req, res) => {
           },
         },
       });
-      const updateTournament = await prisma.Tournament.update({
+      const updateTournament = await prisma.tournament.update({
         where: {
           id: tournamentCreation.id,
         },
@@ -78,18 +84,16 @@ app.post("/addTeamMatch", async (req, res) => {
     } else {
       console.log("tournament id is " + tournamentExists.id);
 
-      const tournamentUpdate = await prisma.Tournament.update({
+      const tournamentUpdate = await prisma.tournament.update({
         where: {
           id: tournamentExists.id,
-        },
+        }, 
         data: {
-          matches: {
-            push: matchCreation,
-          },
-        },
+
+        }
       });
 
-      const matchUpdateTournament = await prisma.Match.update({
+      const matchUpdateTournament = await prisma.match.update({
         where: {
           id: matchCreation.id,
         },
@@ -100,10 +104,9 @@ app.post("/addTeamMatch", async (req, res) => {
           },
         },
       });
-    }
     console.log("tournament id is " + tournamentUpdate?.id);
 
-    const updateTournament = await prisma.Tournament.update({
+    const updateTournament = await prisma.tournament.update({
       where: {
         id: tournamentUpdate.id,
       },
@@ -112,11 +115,11 @@ app.post("/addTeamMatch", async (req, res) => {
           push: matchCreation,
         },
       },
-    });
+    });}
 
     // Update tournament with match
   } else {
-    const matchUpdate = await prisma.Match.update({
+    const matchUpdate = await prisma.match.update({
       where: {
         id: matchExists.id,
       },
@@ -127,7 +130,7 @@ app.post("/addTeamMatch", async (req, res) => {
       },
     });
 
-    const updateTournament = await prisma.Tournament.update({
+    const updateTournament = await prisma.tournament.update({
       where: {
         id: matchUpdate.tournamentId,
       },
@@ -145,7 +148,7 @@ app.post("/addTeamMatch", async (req, res) => {
   app.post("/addTournament", async (req, res) => {
     const json = req.body;
 
-    const tournament = await prisma.Tournament.create({
+    const tournament = await prisma.tournament.create({
       data: {},
     });
   });
