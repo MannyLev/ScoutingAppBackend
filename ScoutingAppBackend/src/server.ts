@@ -30,7 +30,7 @@ app.post("/addTeamMatch", async (req, res) => {
   // Sees if match exists
   const matchExists = (await prisma.match.findMany({
     where: {
-      tournament: { title: json.tournamentName },
+      tournament: { title: json.tournamentName }, // TODO: Fix this
       matchNumber: json.scoutInput.matchNumber,
     },
   }))[0];
@@ -66,9 +66,7 @@ app.post("/addTeamMatch", async (req, res) => {
           id: matchCreation.id,
         },
         data: {
-          tournament: {
-          connect: {id: tournamentCreation.id},
-          },
+          tournamentId: tournamentCreation.id,
         },
       });
       const updateTournament = await prisma.tournament.update({
@@ -98,10 +96,7 @@ app.post("/addTeamMatch", async (req, res) => {
           id: matchCreation.id,
         },
         data: {
-          tournamentId: tournamentUpdate.id,
-          tournament: {
-            set: [...tournament, tournamentUpdate] // !! TODO: MAYbe
-          },
+          tournamentId: tournamentExists.id,
         },
       });
     console.log("tournament id is " + tournamentUpdate?.id);
@@ -112,7 +107,7 @@ app.post("/addTeamMatch", async (req, res) => {
       },
       data: {
         matches: {
-          push: matchCreation,
+          connect: {id: matchCreation.id},
         },
       },
     });}
@@ -132,11 +127,11 @@ app.post("/addTeamMatch", async (req, res) => {
 
     const updateTournament = await prisma.tournament.update({
       where: {
-        id: matchUpdate.tournamentId,
+        id: matchExists.tournamentId as number, // TODO: Set tournament ID
       },
       data: {
         matches: {
-          push: matchUpdate,
+          connect: {id: matchUpdate.id},
         },
       },
     });
