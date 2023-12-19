@@ -3,11 +3,9 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function main() {
-    async function main() {
         // Add prisma queries here
         // const allUsers = await prisma.TeamPerformance.findMany()
         // console.log(allUsers)
-      }
 }
 
 main()
@@ -19,3 +17,5 @@ main()
     await prisma.$disconnect()
     process.exit(1)
   })
+
+export { prisma }

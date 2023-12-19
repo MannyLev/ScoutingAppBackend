@@ -1,7 +1,7 @@
 import express from "express"
-import { PrismaClient } from '@prisma/client'
 import bodyParser from "body-parser";
-const prisma = new PrismaClient()
+import { prisma } from "./index";
+
 const app = express();
 app.use(bodyParser.json());
 
