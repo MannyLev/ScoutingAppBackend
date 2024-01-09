@@ -77,14 +77,13 @@ app.post("/addTeamMatch", async (req, res) => {
   res.send(); 
 }),
 
-  // Adds a new tournament
-  /* app.post("/addTournament", async (req, res) => {
-    const json = req.body;
+app.get("/getTeamPerformanceIntArray", async (req, res) +> {
+  const posts = await.prisma.post.findMany({
+    where: {},
 
-    const tournament = await prisma.tournament.create({
-      data: {},
-    });
-  }); */
+  })
+  res.json(posts)
+})
 
 // TODO: Add queries or requests
 
