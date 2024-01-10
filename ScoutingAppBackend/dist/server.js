@@ -22,9 +22,9 @@ app.post("/addTeamMatch", (req, res) => __awaiter(void 0, void 0, void 0, functi
     const teamPerf = yield prisma.teamPerformance.create({
         data: {
             teamNumber: json.teamNumber,
-            intScoutInput: json.scoutInput,
-            doubleScoutInput: json.scoutInput,
-            stringScoutInput: json.scoutInput
+            intScoutInput: json.intValues,
+            booleanScoutInput: json.booleanValues,
+            stringScoutInput: json.stringValues
         },
     });
     // Creates a match if one does not exist with needed match number

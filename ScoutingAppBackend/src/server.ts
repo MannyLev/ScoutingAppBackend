@@ -61,6 +61,8 @@ app.post("/addTeamMatch", async (req, res) => {
     }
   }); 
   console.log(match); 
+  console.log(json.booleanValues);
+  console.log(json.intValues);
 
   // TODO: Create a parse schema thing that separates json into int, double, and string
   const teamPerf = await prisma.teamPerformance.create({
@@ -77,13 +79,13 @@ app.post("/addTeamMatch", async (req, res) => {
   res.send(); 
 }),
 
-app.get("/getTeamPerformanceIntArray", async (req, res) +> {
+/* app.get("/getTeamPerformanceIntArray", async (req, res) +> {
   const posts = await.prisma.post.findMany({
     where: {},
 
   })
   res.json(posts)
-})
+}) */
 
 // TODO: Add queries or requests
 
