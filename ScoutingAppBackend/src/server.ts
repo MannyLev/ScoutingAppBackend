@@ -79,13 +79,18 @@ app.post("/addTeamMatch", async (req, res) => {
   res.send(); 
 }),
 
-/* app.get("/getTeamPerformanceIntArray", async (req, res) +> {
-  const posts = await.prisma.post.findMany({
-    where: {},
+app.get("/getTeamPerformance", async (req, res) => {
+  const posts = await prisma.teamPerformance.findMany({
+    where: {
+      teamNumber: Number(req.query.teamNumber),
+      matchId: Number(req.query.matchId) // is this a valid Number() thing, and is req.query okay?
+    },
 
   })
   res.json(posts)
-}) */
+}),
+
+
 
 // TODO: Add queries or requests
 
