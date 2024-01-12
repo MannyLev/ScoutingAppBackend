@@ -10,22 +10,16 @@ app.post("/addTeamMatch", async (req, res) => {
   const json = req.body;
 
   // json
-  /*
-  {
-    teamNumber: 321, 
-    matchNumber: 12, 
-    tournamentName: ""
-        intValues: [],
-        stringValues: [],
-        doublevalues: [],
+  // {
+  //   teamNumber: 321, 
+  //   matchNumber: 12, 
+  //   tournamentName: ""
+  //       intValues: [],
+  //       stringValues: [],
+  //       doublevalues: [],
+  // }
 
-    
-    
-  }
-  
-  */
-
-  // TODO: Require that a schema must be written with a teamNumber and a matchNumber in specified way
+  // TODO: Require that a schema must be written with a teamNumber, tournamentId, and a matchNumber in specified way
 
   // Creates a new team performance based on the input given in the json file from the scout
   // The json file will be converted from the qr code and fed to this as input
@@ -34,6 +28,8 @@ app.post("/addTeamMatch", async (req, res) => {
   // TODO: See if tournament ID needs to be an input
 
   // Sees if match exists
+
+  // Creates a tournament if it does not exist for the input team performance
   const tournament = await prisma.tournament.upsert({
     where: {
         title : json.tournamentName,
@@ -44,7 +40,7 @@ app.post("/addTeamMatch", async (req, res) => {
         title: json.tournamentName,
     }
   }); 
-  console.log(tournament);
+  console.log("tournament " + tournament);
 
   const match = await prisma.match.upsert({
     where: {
@@ -60,42 +56,56 @@ app.post("/addTeamMatch", async (req, res) => {
         tournamentId: tournament.id
     }
   }); 
-  console.log(match); 
-  console.log(json.booleanValues);
-  console.log(json.intValues);
+  console.log("matches " + match); 
 
   // TODO: Create a parse schema thing that separates json into int, double, and string
   const teamPerf = await prisma.teamPerformance.create({
     data: {
       teamNumber: json.teamNumber,
-      intScoutInput: json.intValues,
-      booleanScoutInput: json.booleanValues,
-      stringScoutInput: json.stringValues,
+      jsonScoutInput: json.jsonValues,
       matchId: match.id
     },
   });
-  console.log(teamPerf); 
 
-  res.send(); 
+
+  return res.json(teamPerf); 
 }),
 
-app.get("/getTeamPerformance", async (req, res) => {
+app.get("/getSpecificTeamPerformance", async (req, res) => {
   const json = req.body;
-  console.log(json);
+  // console.log(json);
   const posts = await prisma.teamPerformance.findMany({
     where: {
-              uniqueTeamPerf : {
-       matchNumber: json.matchNumber,
        teamNumber: json.teamNumber,
-       // tournamentId: json.tournamentId
-    }
+       match: { tournamentId: json.tournamentId , matchNumber: json.MatchNumber}
     },
   })
-  res.json(posts)
   console.log("Yo ", posts);
+  return res.json(posts);
 }),
 
-// TODO: Add queries or requests
+app.get("/getTeamMatchNumbers", async (req, res) => {
+  const json = req.body;
+  const posts = await prisma.teamPerformance.findMany({
+    where: {
+      teamNumber: json.teamNumber,
+      match: {tournamentId: json.tournamentId}
+    }
+  })
+  console.log("Ha ", posts);
+  return res.json(posts);
+}),
+
+app.get("/getSpecificMatch", async (req, res) => {
+  const json = req.body;
+  const posts = await prisma.teamPerformance.findMany({
+    where: {
+      match: {tournamentId: json.tournamentId, matchNumber: json.matchNumber}
+    }
+  })
+  console.log("Wow ", posts);
+  return res.json(posts);
+})
 
 app.listen(3000, () => {
   console.log("Server started!"); 
