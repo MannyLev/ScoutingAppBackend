@@ -9,27 +9,9 @@ app.use(bodyParser.json());
 app.post("/addTeamMatch", async (req, res) => {
   const json = req.body;
 
-  // json
-  // {
-  //   teamNumber: 321, 
-  //   matchNumber: 12, 
-  //   tournamentName: ""
-  //       intValues: [],
-  //       stringValues: [],
-  //       doublevalues: [],
-  // }
+  // TODO: Require that a schema must be written with a teamNumber, tournamentName, and a matchNumber in specified way
 
-  // TODO: Require that a schema must be written with a teamNumber, tournamentId, and a matchNumber in specified way
-
-  // Creates a new team performance based on the input given in the json file from the scout
-  // The json file will be converted from the qr code and fed to this as input
-
-    // Creates a match if one does not exist with needed match number
-  // TODO: See if tournament ID needs to be an input
-
-  // Sees if match exists
-
-  // Creates a tournament if it does not exist for the input team performance
+  // Creates a tournament if it does not exist with the given tournament name
   const tournament = await prisma.tournament.upsert({
     where: {
         title : json.tournamentName,
@@ -39,9 +21,10 @@ app.post("/addTeamMatch", async (req, res) => {
         matches: {},
         title: json.tournamentName,
     }
-  }); 
+  });
   console.log("tournament " + tournament);
 
+  // Sees if match exists and creates one if it doesn't with given match number
   const match = await prisma.match.upsert({
     where: {
         uniqueMatchId : {
@@ -58,7 +41,8 @@ app.post("/addTeamMatch", async (req, res) => {
   }); 
   console.log("matches " + match); 
 
-  // TODO: Create a parse schema thing that separates json into int, double, and string
+  // Creates a new team performance based on the input given in the json file from the scout
+  // TODO: The json file will be converted from the qr code and fed to this as input
   const teamPerf = await prisma.teamPerformance.create({
     data: {
       teamNumber: json.teamNumber,
@@ -66,41 +50,42 @@ app.post("/addTeamMatch", async (req, res) => {
       matchId: match.id
     },
   });
-
-
   return res.json(teamPerf); 
 }),
 
+// Gets a specific team performance for a given tournament, match number, and team number
 app.get("/getSpecificTeamPerformance", async (req, res) => {
   const json = req.body;
   // console.log(json);
   const posts = await prisma.teamPerformance.findMany({
     where: {
        teamNumber: json.teamNumber,
-       match: { tournamentId: json.tournamentId , matchNumber: json.MatchNumber}
+       match: { tournament: {title: json.tournamentName}, matchNumber: json.MatchNumber}
     },
   })
   console.log("Yo ", posts);
   return res.json(posts);
 }),
 
-app.get("/getTeamMatchNumbers", async (req, res) => {
+// Gets all the matches for a given team in a given tournament
+app.get("/getTeamMatches", async (req, res) => {
   const json = req.body;
   const posts = await prisma.teamPerformance.findMany({
     where: {
       teamNumber: json.teamNumber,
-      match: {tournamentId: json.tournamentId}
+      match: {tournament: {title: json.tournamentName}}
     }
   })
   console.log("Ha ", posts);
   return res.json(posts);
 }),
 
+// Gets all the team performances for a specific match
 app.get("/getSpecificMatch", async (req, res) => {
   const json = req.body;
   const posts = await prisma.teamPerformance.findMany({
     where: {
-      match: {tournamentId: json.tournamentId, matchNumber: json.matchNumber}
+      match: {tournament: {title: json.tournamentName}, matchNumber: json.matchNumber}
     }
   })
   console.log("Wow ", posts);

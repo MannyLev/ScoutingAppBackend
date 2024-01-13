@@ -3,9 +3,9 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function main() {
-        // Add prisma queries here
-        // const allUsers = await prisma.TeamPerformance.findMany()
-        // console.log(allUsers)
+    // Add prisma queries here
+    // const allUsers = await prisma.TeamPerformance.findMany()
+    // console.log(allUsers)
 }
 
 main()
