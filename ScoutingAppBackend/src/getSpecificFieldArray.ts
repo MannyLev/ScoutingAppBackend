@@ -1,4 +1,6 @@
-function getSpecificTeamFieldArray(scoutInputs: JSON[], field: string) {
+import { JsonArray } from "@prisma/client/runtime/library";
+
+function getSpecificFieldArray(scoutInputs: JsonArray[], field: string) {
 
     /* const jString = "{\"a\": 1, \"b\": \"str\"}";
     const jObj = new JSONObject(jString);
@@ -7,10 +9,15 @@ function getSpecificTeamFieldArray(scoutInputs: JSON[], field: string) {
         do what you want
     } */
 
-    let returnArray: [] = 
-    for(let i = 0; i < scoutInputs.length, i++;) {
+    var obj: { property: string; } = { property: "foo" }; // Change it to the needed value
 
+    let returnArray: Array<string | number | boolean> = [];
+    for(let i = 0; i < scoutInputs.length, i++;) {
+        const contents = JSON.stringify(scoutInputs[i]);
+        var indexOfArray = contents.indexOf[field]
+        returnArray.push(scoutInputs[i]['field'])
     }
+    return returnArray;
 
     // What we have to do
     // First, find the type of the field specified by the string
