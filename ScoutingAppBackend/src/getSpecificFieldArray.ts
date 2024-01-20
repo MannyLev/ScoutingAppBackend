@@ -2,20 +2,17 @@ import { JsonArray } from "@prisma/client/runtime/library";
 
 function getSpecificFieldArray(scoutInputs: JsonArray[], field: string) {
 
-    /* const jString = "{\"a\": 1, \"b\": \"str\"}";
-    const jObj = new JSONObject(jString);
-    Object aObj = jObj.get("a");
-    if (aObj instanceof Integer) {
-        do what you want
-    } */
-
-    var obj: { property: string; } = { property: "foo" }; // Change it to the needed value
-
     let returnArray: Array<string | number | boolean> = [];
     for(let i = 0; i < scoutInputs.length, i++;) {
         const contents = JSON.stringify(scoutInputs[i]);
-        var indexOfArray = contents.indexOf[field]
-        returnArray.push(scoutInputs[i]['field'])
+        // The index is field, but the JSON looks like "field":value so there are 7 characters in between
+        var nextChar = contents.indexOf(field) + 7;
+        var stringBuilder = contents.charAt(contents.indexOf(field) + 7);
+        while ((contents.charAt(nextChar) !== ",") && (contents.charAt(nextChar) !== "}") && (contents.charAt(nextChar) !== null) && (contents.charAt(nextChar) !== undefined)) {
+            stringBuilder.concat(stringBuilder, contents.charAt(nextChar));
+            nextChar++;
+        }
+        returnArray.push(stringBuilder)
     }
     return returnArray;
 
