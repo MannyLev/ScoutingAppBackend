@@ -117,7 +117,7 @@ app.get("/getTeamPerformanceField", async (req, res) => {
 })
 
 // Creates a new team performance
-app.get("/getTeamPerformanceField", async (req, res) => {
+app.post("/putNewTeamPerformance", async (req, res) => {
   const json = req.body;
   putNewTeamPerformance(json as JsonObject);
 })
