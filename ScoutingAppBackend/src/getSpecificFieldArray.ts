@@ -1,18 +1,18 @@
-import { JsonArray } from "@prisma/client/runtime/library";
+import { JsonObject } from "@prisma/client/runtime/library";
 
-function getSpecificFieldArray(scoutInputs: JsonArray[], field: string) {
+function getSpecificFieldArray(scoutInputs: JsonObject[], field: string) {
 
     let returnArray: Array<string | number | boolean> = [];
     for(let i = 0; i < scoutInputs.length, i++;) {
-        const contents = JSON.stringify(scoutInputs[i]);
+        const contents = scoutInputs[i][field];
         // The index is field, but the JSON looks like "field":value so there are 7 characters in between
-        var nextChar = contents.indexOf(field) + 7;
-        var stringBuilder = contents.charAt(contents.indexOf(field) + 7);
-        while ((contents.charAt(nextChar) !== ",") && (contents.charAt(nextChar) !== "}") && (contents.charAt(nextChar) !== null) && (contents.charAt(nextChar) !== undefined)) {
-            stringBuilder.concat(stringBuilder, contents.charAt(nextChar));
-            nextChar++;
-        }
-        returnArray.push(stringBuilder)
+        // var nextChar = contents.indexOf(field) + 7;
+        // var stringBuilder = contents.charAt(contents.indexOf(field) + 7);
+        // while ((contents.charAt(nextChar) !== ",") && (contents.charAt(nextChar) !== "}") && (contents.charAt(nextChar) !== null) && (contents.charAt(nextChar) !== undefined)) {
+        //     stringBuilder.concat(stringBuilder, contents.charAt(nextChar));
+        //     nextChar++;
+        // }
+        // returnArray.push(stringBuilder)
     }
     return returnArray;
 
