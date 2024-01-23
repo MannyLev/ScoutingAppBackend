@@ -1,6 +1,12 @@
 import express from "express"
 import bodyParser from "body-parser";
 import { prisma } from "./index";
+import { getFieldArray } from "./getFieldArray";
+import { getMatchFields } from "./getMatchFields";
+import { getTeamFields } from "./getTeamFields";
+import { getTeamPerformanceField } from "./getTeamPerformanceField";
+import { putNewTeamPerformance } from "./putNewTeamPerformance";
+import { JsonObject, JsonValue } from "@prisma/client/runtime/library";
 
 const app = express();
 app.use(bodyParser.json());
@@ -91,6 +97,31 @@ app.get("/getSpecificMatch", async (req, res) => {
   console.log("Wow ", posts);
   return res.json(posts);
 })
+
+// Gets all of the values under the "field" key for a specific team
+app.get("/getTeamFields", async (req, res) => {
+  const json = req.body;
+  return getTeamFields(json.field, json.tournamentName, json.teamNumber);
+})
+
+// Gets all of the values under the "field" key for a specific match
+app.get("/getMatchFields", async (req, res) => {
+  const json = req.body;
+  return getTeamFields(json.field, json.tournamentName, json.matchNumber);
+})
+
+// Gets the value under the "field" key for a specific team performance
+app.get("/getTeamPerformanceField", async (req, res) => {
+  const json = req.body;
+  return getTeamPerformanceField(json.field, json.tournamentName, json.teamNumber, json.matchNumber);
+})
+
+// Creates a new team performance
+app.get("/getTeamPerformanceField", async (req, res) => {
+  const json = req.body;
+  putNewTeamPerformance(json as JsonObject);
+})
+
 
 app.listen(3000, () => {
   console.log("Server started!"); 
