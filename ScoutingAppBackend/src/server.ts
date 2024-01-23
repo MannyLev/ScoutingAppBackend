@@ -101,25 +101,36 @@ app.get("/getSpecificMatch", async (req, res) => {
 // Gets all of the values under the "field" key for a specific team
 app.get("/getTeamFields", async (req, res) => {
   const json = req.body;
-  return getTeamFields(json.field, json.tournamentName, json.teamNumber);
+  const data = getTeamFields(json.field, json.tournamentName, json.teamNumber);
+  res.status(200).json({
+    data: data
+  }).end(); 
 })
 
 // Gets all of the values under the "field" key for a specific match
 app.get("/getMatchFields", async (req, res) => {
   const json = req.body;
-  return getTeamFields(json.field, json.tournamentName, json.matchNumber);
+  const data = await getTeamFields(json.field, json.tournamentName, json.matchNumber);
+  res.status(200).json({
+    data: data
+  }).end(); 
 })
 
 // Gets the value under the "field" key for a specific team performance
 app.get("/getTeamPerformanceField", async (req, res) => {
   const json = req.body;
-  return getTeamPerformanceField(json.field, json.tournamentName, json.teamNumber, json.matchNumber);
+  console.log(json);
+  const data = getTeamPerformanceField(json.field, json.tournamentName, json.teamNumber, json.matchNumber);
+  res.status(200).json({
+    data: data
+  }).end(); 
 })
 
 // Creates a new team performance
 app.post("/putNewTeamPerformance", async (req, res) => {
   const json = req.body;
-  putNewTeamPerformance(json as JsonObject);
+  putNewTeamPerformance(json);
+  res.status(200).end();
 })
 
 

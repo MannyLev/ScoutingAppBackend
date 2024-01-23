@@ -9,5 +9,7 @@ export async function getTeamPerformanceField(field: string, tournamentName: str
            match: { tournament: {title: tournamentName}, matchNumber: matchNumber}
         },
       })
+
+      console.log(posts);
       return getFieldArray(posts.map(e => e.jsonScoutInput as JsonObject), field);
 }

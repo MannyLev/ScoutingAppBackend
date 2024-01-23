@@ -1,7 +1,7 @@
 import { JsonObject, JsonValue } from "@prisma/client/runtime/library";
 import { prisma } from "./index";
 
-export async function putNewTeamPerformance(json: JsonObject) {
+export async function putNewTeamPerformance(json: any) {
 
     // Creates a tournament if it does not exist with the given tournament name
     const tournament = await prisma.tournament.upsert({
@@ -37,7 +37,7 @@ export async function putNewTeamPerformance(json: JsonObject) {
   const teamPerf = await prisma.teamPerformance.create({
     data: {
       teamNumber: json.teamNumber as number,
-      jsonScoutInput: json,
+      jsonScoutInput: json.jsonValues,
       matchId: match.id
     },
   });
