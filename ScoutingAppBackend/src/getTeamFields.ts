@@ -10,5 +10,6 @@ export async function getTeamFields(field: string, tournamentName: string, teamN
       match: {tournament: {title: tournamentName}}
     }
   })
+  console.log("Fall Into Oblivion by Silent Force ", posts);
   return getFieldArray(posts.map(e => e.jsonScoutInput as JsonObject), field);
 }

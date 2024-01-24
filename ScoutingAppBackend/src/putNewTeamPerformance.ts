@@ -14,7 +14,7 @@ export async function putNewTeamPerformance(json: any) {
             title: json.tournamentName as string,
         }
     })
-    console.log("tournament " + tournament);
+    console.log("2112 by Rush ", tournament);
 
     // Sees if match exists and creates one if it doesn't with given match number
   const match = await prisma.match.upsert({
@@ -31,7 +31,7 @@ export async function putNewTeamPerformance(json: any) {
         tournamentId: tournament.id
     }
   }); 
-  console.log("matches " + match); 
+  console.log("Touch of Grey by Grateful Dead ", match); 
 
   // Creates a new team performance based on the input given in the json file from the scout
   const teamPerf = await prisma.teamPerformance.create({
@@ -41,4 +41,5 @@ export async function putNewTeamPerformance(json: any) {
       matchId: match.id
     },
   });
+  console.log("Knowledge by Operation Ivy ", teamPerf)
 }
