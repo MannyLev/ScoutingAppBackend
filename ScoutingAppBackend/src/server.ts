@@ -28,7 +28,7 @@ app.post("/addTeamMatch", async (req, res) => {
         title: json.tournamentName,
     }
   });
-  console.log("In Too Deep by Sum 41 ", tournament);
+  console.log("In Too Deep by Sum 41 and tournament added ", tournament);
 
   // Sees if match exists and creates one if it doesn't with given match number
   const match = await prisma.match.upsert({
@@ -45,7 +45,7 @@ app.post("/addTeamMatch", async (req, res) => {
         tournamentId: tournament.id
     }
   }); 
-  console.log("Semi-Charmed Life by Third Eye Blind ", match); 
+  console.log("Semi-Charmed Life by Third Eye Blind and match added ", match); 
 
   // Creates a new team performance based on the input given in the json file from the scout
   // TODO: The json file will be converted from the qr code and fed to this as input
@@ -56,23 +56,23 @@ app.post("/addTeamMatch", async (req, res) => {
       matchId: match.id
     },
   });
-  console.log("Breakfast at Tiffany's by Deep Blue Something ", teamPerf);
+  console.log("Breakfast at Tiffany's by Deep Blue Something and team performance added ", teamPerf);
   return res.json(teamPerf); 
 }),
 
 // Gets a specific team performance for a given tournament, match number, and team number
 app.get("/getTeamPerformance", async (req, res) => {
   const json = req.body;
-  console.log("Bark At The Moon by Ozzy Osbourne ", json.tournamentName);
-  console.log("Blackout by Scorpions ", json.matchNumber);
-  console.log("In My Dreams by Dokken ", json.teamNumber);
+  console.log("Bark At The Moon by Ozzy Osbourne and tournament requested ", json.tournamentName);
+  console.log("Blackout by Scorpions and match number requested ", json.matchNumber);
+  console.log("In My Dreams by Dokken and team number requested ", json.teamNumber);
   const posts = await prisma.teamPerformance.findMany({
     where: {
        teamNumber: json.teamNumber,
        match: { tournament: {title: json.tournamentName}, matchNumber: json.matchNumber}
     },
   })
-  console.log("Shake Me by Cinderella ", posts);
+  console.log("Shake Me by Cinderella and posts found ", posts);
   return res.json(posts);
 }),
 
@@ -85,7 +85,7 @@ app.get("/getTeamMatches", async (req, res) => {
       match: {tournament: {title: json.tournamentName}}
     }
   })
-  console.log("Kickstart My Heart by Motley Crue ", posts);
+  console.log("Kickstart My Heart by Motley Crue and posts found ", posts);
   return res.json(posts);
 }),
 
@@ -97,7 +97,7 @@ app.get("/getMatch", async (req, res) => {
       match: {tournament: {title: json.tournamentName}, matchNumber: json.matchNumber}
     }
   })
-  console.log("Poison by Alice Cooper ", posts);
+  console.log("Poison by Alice Cooper and posts found ", posts);
   return res.json(posts);
 })
 
@@ -105,7 +105,7 @@ app.get("/getMatch", async (req, res) => {
 app.get("/getTeamFields", async (req, res) => {
   const json = req.body;
   const data = await getTeamFields(json.field, json.tournamentName, json.teamNumber);
-  console.log("Nothin' But A Good Time by Poison ", (await data).toString());
+  console.log("Nothin' But A Good Time by Poison and values found ", (await data).toString());
   res.status(200).json({
     data: data
   }).end(); 
@@ -114,7 +114,7 @@ app.get("/getTeamFields", async (req, res) => {
 // Gets all of the values under the "field" key for a specific match
 app.get("/getMatchFields", async (req, res) => {
   const json = req.body;
-  console.log("Army of the Night by Powerwolf ", json);
+  console.log("Army of the Night by Powerwolf and items requested ", json);
   const data = await getMatchFields(json.field, json.tournamentName, json.matchNumber);
   res.status(200).json({
     data: data
@@ -125,6 +125,7 @@ app.get("/getMatchFields", async (req, res) => {
 app.get("/getTeamPerformanceField", async (req, res) => {
   const json = req.body;
   console.log(json);
+  console.log("Heartwork by Carcass and items requested ", json);
   const data = await getTeamPerformanceField(json.field, json.tournamentName, json.teamNumber, json.matchNumber);
   res.status(200).json({
     data: data
@@ -135,13 +136,16 @@ app.get("/getTeamPerformanceField", async (req, res) => {
 app.post("/putNewTeamPerformance", async (req, res) => {
   const json = req.body;
   await putNewTeamPerformance(json);
-  console.log("The Bard's Song in the Forest by Blind Guardian ", putNewTeamPerformance);
+  console.log("The Bard's Song in the Forest by Blind Guardian and team performance added ", putNewTeamPerformance);
   res.status(200).end();
 })
 
 
 app.listen(3000, () => {
-  console.log("Hearts on Fire by Hammerfall"); 
+  console.log("Hearts on Fire by Hammerfall and Server Started!"); 
 }); 
 
 module.exports = app;
+
+// TODO: Possibly filters for getting as parameters
+// TODO: Handle errors and faulty data inputs

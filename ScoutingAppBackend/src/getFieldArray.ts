@@ -5,10 +5,10 @@ export function getFieldArray(scoutInputs: JsonObject[], field: string) {
     console.log("scoutInputs ", scoutInputs, " length", scoutInputs.length);
     let returnArray: Array<string | number | boolean> = [];
     for(let i = 0; i < scoutInputs.length; i++) {
-        console.log(i, " I Want Out by Helloween ", scoutInputs[i][field]); 
+        console.log(i, " I Want Out by Helloween and field found ", scoutInputs[i][field]); 
         returnArray.push(scoutInputs[i][field] as string | number | boolean);
     }
-    console.log("Pull Me Under by Dream Theater ", returnArray.toString())
+    console.log("Pull Me Under by Dream Theater and array of fields found ", returnArray.toString())
     return returnArray;
 
     // Create methods to find the type of the array

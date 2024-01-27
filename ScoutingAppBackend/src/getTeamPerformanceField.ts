@@ -10,6 +10,6 @@ export async function getTeamPerformanceField(field: string, tournamentName: str
         },
       })
 
-      console.log("Hunting High and Low by Stratovarius", posts);
+      console.log("Hunting High and Low by Stratovarius and posts found ", posts);
       return getFieldArray(posts.map(e => e.jsonScoutInput as JsonObject), field);
 }
