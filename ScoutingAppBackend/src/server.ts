@@ -118,7 +118,7 @@ app.get("/getMatchFields", async (req, res) => {
   const data = await getMatchFields(json.field, json.tournamentName, json.matchNumber);
   res.status(200).json({
     data: data
-  }).end(); 
+  }).end();
 })
 
 // Gets the value under the "field" key for a specific team performance
@@ -147,5 +147,11 @@ app.listen(3000, () => {
 
 module.exports = app;
 
-// TODO: Possibly filters for getting as parameters
-// TODO: Handle errors and faulty data inputs
+/* 
+TODO List:
+Handle errors and faulty inputs
+New get methods?
+Make everything post
+Make new routes based on what emailed
+
+*/ 
