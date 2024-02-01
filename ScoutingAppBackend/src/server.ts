@@ -1,5 +1,6 @@
 import express from "express"
 import bodyParser from "body-parser";
+import cors from "cors";
 import { prisma } from "./index";
 import { getFieldArray } from "./getFieldArray";
 import { getMatchFields } from "./getMatchFields";
@@ -10,6 +11,9 @@ import { JsonObject, JsonValue } from "@prisma/client/runtime/library";
 
 const app = express();
 app.use(bodyParser.json());
+app.use(cors({
+  origin: "*"
+}));
 
 // Adds a team performance to the database
 app.post("/addTeamMatch", async (req, res) => {
@@ -135,11 +139,15 @@ app.get("/getTeamPerformanceField", async (req, res) => {
 // Creates a new team performance
 app.post("/putNewTeamPerformance", async (req, res) => {
   const json = req.body;
+
   await putNewTeamPerformance(json);
-  console.log("The Bard's Song in the Forest by Blind Guardian and team performance added ", putNewTeamPerformance);
+  console.log("The Bard's Song in the Forest by Blind Guardian and team performance added ", req.body);
   res.status(200).end();
 })
 
+app.get("/", async (req, res) => {
+  res.send("Welcome to the scouting app backend")
+})
 
 app.listen(3000, () => {
   console.log("Hearts on Fire by Hammerfall and Server Started!"); 
