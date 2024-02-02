@@ -6,107 +6,25 @@ import { getFieldArray } from "./getFieldArray";
 import { getMatchFields } from "./getMatchFields";
 import { getTeamFields } from "./getTeamFields";
 import { getTeamPerformanceField } from "./getTeamPerformanceField";
+import { getMatch } from "./getMatch"
+import { getMatchNumbersForTeam } from "./getMatchNumbersForTeam";
+import { getRecordsCount } from "./getRecordsCount";
 import { putNewTeamPerformance } from "./putNewTeamPerformance";
 import { JsonObject, JsonValue } from "@prisma/client/runtime/library";
+import { getTeamMatches } from "./getTeamMatches";
+import { getTeamNames } from "./getTeamNames";
+import { getTeamNamesForMatchNumber } from "./getTeamNamesForMatchNumber";
+import { getTeamPerformance } from "./getTeamPerformance";
 
 const app = express();
 app.use(bodyParser.json());
+
 app.use(cors({
   origin: "*"
 }));
 
-// Adds a team performance to the database
-app.post("/addTeamMatch", async (req, res) => {
-  const json = req.body;
-
-  // TODO: Require that a schema must be written with a teamNumber, tournamentName, and a matchNumber in specified way
-
-  // Creates a tournament if it does not exist with the given tournament name
-  const tournament = await prisma.tournament.upsert({
-    where: {
-        title : json.tournamentName,
-    },
-    update: {},
-    create: {
-        matches: {},
-        title: json.tournamentName,
-    }
-  });
-  console.log("In Too Deep by Sum 41 and tournament added ", tournament);
-
-  // Sees if match exists and creates one if it doesn't with given match number
-  const match = await prisma.match.upsert({
-    where: {
-        uniqueMatchId : {
-            matchNumber: json.matchNumber,
-            tournamentId: tournament.id
-        }
-    },
-    update: {},
-    create: {
-        matchNumber: json.matchNumber,
-        teams: {},
-        tournamentId: tournament.id
-    }
-  }); 
-  console.log("Semi-Charmed Life by Third Eye Blind and match added ", match); 
-
-  // Creates a new team performance based on the input given in the json file from the scout
-  // TODO: The json file will be converted from the qr code and fed to this as input
-  const teamPerf = await prisma.teamPerformance.create({
-    data: {
-      teamNumber: json.teamNumber,
-      jsonScoutInput: json.jsonValues,
-      matchId: match.id
-    },
-  });
-  console.log("Breakfast at Tiffany's by Deep Blue Something and team performance added ", teamPerf);
-  return res.json(teamPerf); 
-}),
-
-// Gets a specific team performance for a given tournament, match number, and team number
-app.get("/getTeamPerformance", async (req, res) => {
-  const json = req.body;
-  console.log("Bark At The Moon by Ozzy Osbourne and tournament requested ", json.tournamentName);
-  console.log("Blackout by Scorpions and match number requested ", json.matchNumber);
-  console.log("In My Dreams by Dokken and team number requested ", json.teamNumber);
-  const posts = await prisma.teamPerformance.findMany({
-    where: {
-       teamNumber: json.teamNumber,
-       match: { tournament: {title: json.tournamentName}, matchNumber: json.matchNumber}
-    },
-  })
-  console.log("Shake Me by Cinderella and posts found ", posts);
-  return res.json(posts);
-}),
-
-// Gets all the matches for a given team in a given tournament
-app.get("/getTeamMatches", async (req, res) => {
-  const json = req.body;
-  const posts = await prisma.teamPerformance.findMany({
-    where: {
-      teamNumber: json.teamNumber,
-      match: {tournament: {title: json.tournamentName}}
-    }
-  })
-  console.log("Kickstart My Heart by Motley Crue and posts found ", posts);
-  return res.json(posts);
-}),
-
-// Gets all the team performances for a specific match
-app.get("/getMatch", async (req, res) => {
-  const json = req.body;
-  const posts = await prisma.teamPerformance.findMany({
-    where: {
-      match: {tournament: {title: json.tournamentName}, matchNumber: json.matchNumber}
-    }
-  })
-  console.log("Poison by Alice Cooper and posts found ", posts);
-  return res.json(posts);
-})
-
 // Gets all of the values under the "field" key for a specific team
-app.get("/getTeamFields", async (req, res) => {
+app.post("/getTeamFields", async (req, res) => {
   const json = req.body;
   const data = await getTeamFields(json.field, json.tournamentName, json.teamNumber);
   console.log("Nothin' But A Good Time by Poison and values found ", (await data).toString());
@@ -116,7 +34,7 @@ app.get("/getTeamFields", async (req, res) => {
 })
 
 // Gets all of the values under the "field" key for a specific match
-app.get("/getMatchFields", async (req, res) => {
+app.post("/getMatchFields", async (req, res) => {
   const json = req.body;
   console.log("Army of the Night by Powerwolf and items requested ", json);
   const data = await getMatchFields(json.field, json.tournamentName, json.matchNumber);
@@ -126,11 +44,74 @@ app.get("/getMatchFields", async (req, res) => {
 })
 
 // Gets the value under the "field" key for a specific team performance
-app.get("/getTeamPerformanceField", async (req, res) => {
+app.post("/getTeamPerformanceField", async (req, res) => {
   const json = req.body;
   console.log(json);
   console.log("Heartwork by Carcass and items requested ", json);
   const data = await getTeamPerformanceField(json.field, json.tournamentName, json.teamNumber, json.matchNumber);
+  res.status(200).json({
+    data: data
+  }).end(); 
+})
+
+// Gets all of the team performances for a specific match
+app.post("/getMatch", async (req, res) => {
+  const json = req.body;
+  const data = await getMatch(json.tournamentName, json.matchNumber);
+  res.status(200).json({
+    data: data
+  }).end(); 
+})
+
+// Gets a specific team performance
+app.post("/getTeamPerformance", async (req, res) => {
+  const json = req.body;
+  const data = await getTeamPerformance(json.tournamentName, json.matchNumber, json.teamNumber);
+  res.status(200).json({
+    data: data
+  }).end(); 
+})
+
+// Gets the match numbers for a specific team
+app.post("/getMatchNumbersForTeam", async (req, res) => {
+  const json = req.body;
+  const data = await getMatchNumbersForTeam(json.tournamentName, json.teamNumber);
+  res.status(200).json({
+    data: data
+  }).end(); 
+})
+
+// Gets the names of teams involved in a specific match
+app.post("/getTeamNamesForMatchNumber", async (req, res) => {
+  const json = req.body;
+  const data = await getTeamNamesForMatchNumber(json.tournamentName, json.matchNumber);
+  res.status(200).json({
+    data: data
+  }).end(); 
+})
+
+// Returns the number of team performances for a specific team in a specific match for a specific tournament
+app.post("/getRecordsCount", async (req, res) => {
+  const json = req.body;
+  const data = await getRecordsCount(json.tournamentName, json.matchNumber, json.teamNumber);
+  res.status(200).json({
+    data: data
+  }).end(); 
+})
+
+// Returns all the team performances for a specific team
+app.post("/getTeamMatches", async (req, res) => {
+  const json = req.body;
+  const data = await getTeamMatches(json.tournamentName, json.teamNumber);
+  res.status(200).json({
+    data: data
+  }).end(); 
+})
+
+// Returns all of the team names in a given tournament
+app.post("/getTeamNames", async (req, res) => {
+  const json = req.body;
+  const data = await getTeamNames(json.tournamentName);
   res.status(200).json({
     data: data
   }).end(); 
@@ -158,6 +139,9 @@ module.exports = app;
 /* 
 TODO List:
 Handle errors and faulty inputs
-Make everything post
-Prevent double uploads
+Not for me: require that schemas have tournament name, matchnumber, team number
 */ 
+
+// get match numbers overall
+// get maximums -> how do you handle sliders out of ten?
+// get averages for entire schema

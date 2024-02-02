@@ -1,7 +1,7 @@
 import { prisma } from "./index";
 
 // Gets all of the match numbers of a certain team in a certain tournament
-export async function getMatchNumbersWithTeam(tournamentName: string, teamNumber: number) {
+export async function getMatchNumbersForTeam(tournamentName: string, teamNumber: number) {
     
     // Finds all of the team performances in the tournament for a specific team
     const teamPerformances = await prisma.teamPerformance.findMany({
