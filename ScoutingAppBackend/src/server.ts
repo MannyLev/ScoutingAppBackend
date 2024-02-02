@@ -158,8 +158,6 @@ module.exports = app;
 /* 
 TODO List:
 Handle errors and faulty inputs
-New get methods?
 Make everything post
-Make new routes based on what emailed
-
+Prevent double uploads
 */ 

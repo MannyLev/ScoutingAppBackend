@@ -2,7 +2,7 @@ import { JsonObject } from "@prisma/client/runtime/library";
 import { getFieldArray } from "./getFieldArray";
 import { prisma } from "./index";
 
-export async function getTeamPerformanceField(field: string, tournamentName: string, teamNumber: number, matchNumber: number) {
+export async function getTeamPerformanceField(field: string, tournamentName: string, matchNumber: number, teamNumber: number) {
     const posts = await prisma.teamPerformance.findMany({
         where: {
            teamNumber: teamNumber,
