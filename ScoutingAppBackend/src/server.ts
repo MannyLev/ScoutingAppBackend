@@ -15,6 +15,9 @@ import { getTeamMatches } from "./getTeamMatches";
 import { getTeamNames } from "./getTeamNames";
 import { getTeamNamesForMatchNumber } from "./getTeamNamesForMatchNumber";
 import { getTeamPerformance } from "./getTeamPerformance";
+import { z } from "zod";
+import { validate } from "./validate";
+import { Prisma } from "@prisma/client";
 
 const app = express();
 app.use(bodyParser.json());
@@ -23,14 +26,34 @@ app.use(cors({
   origin: "*"
 }));
 
+
+
 // Gets all of the values under the "field" key for a specific team
-app.post("/getTeamFields", async (req, res) => {
+app.post("/getTeamFields", validate(z.object({
+  body: z.object({
+    field: z.string({
+      required_error: "Field is required",
+    }),
+    tournamentName: z.string({
+      required_error: "Tournament name is required"
+    }),
+    teamNumber: z.number({
+      required_error: "Team number is required"
+    })
+  })
+})),async (req, res) => {
+ try {
   const json = req.body;
   const data = await getTeamFields(json.field, json.tournamentName, json.teamNumber);
   console.log("Nothin' But A Good Time by Poison and values found ", (await data).toString());
   res.status(200).json({
     data: data
   }).end(); 
+ } catch (e) {
+  if (e instanceof Prisma.PrismaClientKnownRequestError) {
+    res.status(400).json({ e })
+  }
+ }
 })
 
 // Gets all of the values under the "field" key for a specific match
@@ -145,3 +168,5 @@ Not for me: require that schemas have tournament name, matchnumber, team number
 // get match numbers overall
 // get maximums -> how do you handle sliders out of ten?
 // get averages for entire schema
+
+// Try catches
