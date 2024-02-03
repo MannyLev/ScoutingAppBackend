@@ -10,7 +10,7 @@ export async function getTeamsInMatch(tournamentName: string, matchNumber: numbe
         }
       })
 
-    let returnArray: Array<number> = [];
+    let returnArray: Array<string> = [];
 
     // Finds all of the team names for the given group of team performances
     for(let i = 0; i < teamPerformances.length; i++) {
@@ -19,7 +19,7 @@ export async function getTeamsInMatch(tournamentName: string, matchNumber: numbe
 
         // If not null, adds that match number to the array
         if ((teamName != null) && (teamName != undefined)) {
-            returnArray.push(matchNumber);
+            returnArray.push(teamPerformances[i].teamName);
         }
     }
     return returnArray;
