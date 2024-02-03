@@ -1,7 +1,7 @@
 import { prisma } from "./index";
 
 // Gets all of the team names for a certain match number
-export async function getTeamNamesForMatchNumber(tournamentName: string, matchNumber: number) {
+export async function getTeamsInMatch(tournamentName: string, matchNumber: number) {
     
     // Finds all of the team performances in the tournament for a specific match
     const teamPerformances = await prisma.teamPerformance.findMany({
@@ -15,10 +15,10 @@ export async function getTeamNamesForMatchNumber(tournamentName: string, matchNu
     // Finds all of the team names for the given group of team performances
     for(let i = 0; i < teamPerformances.length; i++) {
         
-        var teamNumber = teamPerformances[i].teamNumber as number;
+        var teamName = teamPerformances[i].teamName as string;
 
         // If not null, adds that match number to the array
-        if (teamNumber != null) {
+        if ((teamName != null) && (teamName != undefined)) {
             returnArray.push(matchNumber);
         }
     }

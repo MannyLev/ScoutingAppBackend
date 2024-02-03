@@ -3,13 +3,13 @@ import { getFieldArray } from "./getFieldArray";
 import { prisma } from "./index";
 
 // Given a field, it returns an array of the values for that field
-export async function getTeamFields(field: string, tournamentName: string, teamNumber: number) {
-  const posts = await prisma.teamPerformance.findMany({
+export async function getTeamFields(field: string, tournamentName: string, teamName: string) {
+  const teamPerformances = await prisma.teamPerformance.findMany({
     where: {
-      teamNumber: teamNumber,
+      teamName: teamName,
       match: {tournament: {title: tournamentName}}
     }
   })
-  console.log("Fall Into Oblivion by Silent Force and posts found ", posts);
-  return getFieldArray(posts.map(e => e.jsonScoutInput as JsonObject), field);
+  console.log("Fall Into Oblivion by Silent Force and posts found ", teamPerformances);
+  return getFieldArray(teamPerformances.map(e => e.jsonScoutInput as JsonObject), field);
 }

@@ -28,7 +28,7 @@ model Match {
 
 model TeamPerformance {
   id         Int    @id @default(autoincrement())
-  teamNumber Int
+  teamName String
   jsonScoutInput Json
   match      Match?  @relation(fields: [matchId], references: [id])
   matchId    Int?

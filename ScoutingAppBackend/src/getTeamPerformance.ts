@@ -1,12 +1,12 @@
 import { prisma } from "./index";
 
-export async function getTeamPerformance(tournamentName: string, matchNumber: number, teamNumber: number) {
-    const posts = await prisma.teamPerformance.findMany({
+export async function getTeamPerformance(tournamentName: string, matchNumber: number, teamName: string) {
+    const teamPerformances = await prisma.teamPerformance.findMany({
         where: {
-           teamNumber: teamNumber,
+           teamName: teamName,
            match: { tournament: {title: tournamentName}, matchNumber: matchNumber}
         },
       })
-      return posts;
+      return teamPerformances;
 }
 

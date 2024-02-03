@@ -2,7 +2,9 @@ import express from "express"
 import bodyParser from "body-parser";
 import cors from "cors";
 import { prisma } from "./index";
-import { getFieldArray } from "./getFieldArray";
+import { z } from "zod";
+import { validate } from "./validate";
+import { Prisma } from "@prisma/client";
 import { getMatchFields } from "./getMatchFields";
 import { getTeamFields } from "./getTeamFields";
 import { getTeamPerformanceField } from "./getTeamPerformanceField";
@@ -10,14 +12,12 @@ import { getMatch } from "./getMatch"
 import { getMatchNumbersForTeam } from "./getMatchNumbersForTeam";
 import { getRecordsCount } from "./getRecordsCount";
 import { putNewTeamPerformance } from "./putNewTeamPerformance";
-import { JsonObject, JsonValue } from "@prisma/client/runtime/library";
-import { getTeamMatches } from "./getTeamMatches";
+import { getNumberOfMatches } from "./getNumberOfMatches";
+import { getMatchesWithTeam } from "./getMatchesWithTeam";
 import { getTeamNames } from "./getTeamNames";
-import { getTeamNamesForMatchNumber } from "./getTeamNamesForMatchNumber";
+import { getTeamsInMatch } from "./getTeamsInMatch";
 import { getTeamPerformance } from "./getTeamPerformance";
-import { z } from "zod";
-import { validate } from "./validate";
-import { Prisma } from "@prisma/client";
+import { getMatchNumbers } from "./getMatchNumbers";
 
 const app = express();
 app.use(bodyParser.json());
@@ -37,14 +37,14 @@ app.post("/getTeamFields", validate(z.object({
     tournamentName: z.string({
       required_error: "Tournament name is required"
     }),
-    teamNumber: z.number({
-      required_error: "Team number is required"
+    teamName: z.string({
+      required_error: "Team name is required"
     })
   })
 })),async (req, res) => {
  try {
   const json = req.body;
-  const data = await getTeamFields(json.field, json.tournamentName, json.teamNumber);
+  const data = await getTeamFields(json.field, json.tournamentName, json.teamName);
   console.log("Nothin' But A Good Time by Poison and values found ", (await data).toString());
   res.status(200).json({
     data: data
@@ -57,93 +57,281 @@ app.post("/getTeamFields", validate(z.object({
 })
 
 // Gets all of the values under the "field" key for a specific match
-app.post("/getMatchFields", async (req, res) => {
-  const json = req.body;
+app.post("/getMatchFields", validate(z.object({
+  body: z.object({
+    field: z.string({
+      required_error: "Field is required",
+    }),
+    tournamentName: z.string({
+      required_error: "Tournament name is required"
+    }),
+    matchNumber: z.number({
+      required_error: "Match number is required"
+    })
+  })
+})), async (req, res) => {
+  try {
+    const json = req.body;
   console.log("Army of the Night by Powerwolf and items requested ", json);
   const data = await getMatchFields(json.field, json.tournamentName, json.matchNumber);
   res.status(200).json({
     data: data
   }).end();
+  } catch(e) {
+    if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      res.status(400).json({ e })
+    }
+  }
 })
 
 // Gets the value under the "field" key for a specific team performance
-app.post("/getTeamPerformanceField", async (req, res) => {
-  const json = req.body;
-  console.log(json);
-  console.log("Heartwork by Carcass and items requested ", json);
-  const data = await getTeamPerformanceField(json.field, json.tournamentName, json.teamNumber, json.matchNumber);
-  res.status(200).json({
-    data: data
-  }).end(); 
+app.post("/getTeamPerformanceField", validate(z.object({
+  body: z.object({
+    field: z.string({
+      required_error: "Field is required",
+    }),
+    tournamentName: z.string({
+      required_error: "Tournament name is required"
+    }),
+    matchNumber: z.number({
+      required_error: "Match number is required"
+    }),
+    teamName: z.string({
+      required_error: "Team name is required"
+    })
+  })
+})), async (req, res) => {
+  try {
+    const json = req.body;
+    console.log(json);
+    console.log("Heartwork by Carcass and items requested ", json);
+    const data = await getTeamPerformanceField(json.field, json.tournamentName, json.teamName, json.matchNumber);
+    res.status(200).json({
+      data: data
+    }).end(); 
+  } catch (e) {
+    if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      res.status(400).json({ e })
+    }
+  }
 })
 
 // Gets all of the team performances for a specific match
-app.post("/getMatch", async (req, res) => {
-  const json = req.body;
-  const data = await getMatch(json.tournamentName, json.matchNumber);
-  res.status(200).json({
-    data: data
-  }).end(); 
+app.post("/getMatch", validate(z.object({
+  body: z.object({
+    tournamentName: z.string({
+      required_error: "Tournament name is required"
+    }),
+    matchNumber: z.number({
+      required_error: "Match number is required"
+    })
+  })
+})), async (req, res) => {
+  try {
+    const json = req.body;
+    const data = await getMatch(json.tournamentName, json.matchNumber);
+    res.status(200).json({
+      data: data
+    }).end(); 
+  } catch (e) {
+    if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      res.status(400).json({ e })
+    }
+  }
 })
 
 // Gets a specific team performance
-app.post("/getTeamPerformance", async (req, res) => {
-  const json = req.body;
-  const data = await getTeamPerformance(json.tournamentName, json.matchNumber, json.teamNumber);
-  res.status(200).json({
-    data: data
-  }).end(); 
+app.post("/getTeamPerformance", validate(z.object({
+  body: z.object({
+    tournamentName: z.string({
+      required_error: "Tournament name is required"
+    }),
+    matchNumber: z.number({
+      required_error: "Match number is required"
+    }),
+    teamName: z.string({
+      required_error: "Team Number is required"
+    }),
+  })
+})), async (req, res) => {
+  try {
+    const json = req.body;
+    const data = await getTeamPerformance(json.tournamentName, json.matchNumber, json.teamName);
+    res.status(200).json({
+      data: data
+    }).end();
+  }
+  catch (e) {
+    if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      res.status(400).json({ e })
+    }
+  }
 })
 
 // Gets the match numbers for a specific team
-app.post("/getMatchNumbersForTeam", async (req, res) => {
-  const json = req.body;
-  const data = await getMatchNumbersForTeam(json.tournamentName, json.teamNumber);
-  res.status(200).json({
-    data: data
-  }).end(); 
+app.post("/getMatchNumbersForTeam", validate(z.object({
+  body: z.object({
+    tournamentName: z.string({
+      required_error: "Tournament name is required"
+    }),
+    teamName: z.string({
+      required_error: "Team name is required"
+    }),
+  })
+})), async (req, res) => {
+  try {
+    const json = req.body;
+    const data = await getMatchNumbersForTeam(json.tournamentName, json.teamName);
+    res.status(200).json({
+      data: data
+    }).end(); 
+  } catch (e) {
+    if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      res.status(400).json({ e })
+    }
+  }
 })
 
 // Gets the names of teams involved in a specific match
-app.post("/getTeamNamesForMatchNumber", async (req, res) => {
-  const json = req.body;
-  const data = await getTeamNamesForMatchNumber(json.tournamentName, json.matchNumber);
-  res.status(200).json({
-    data: data
-  }).end(); 
+app.post("/getTeamsInMatch", validate(z.object({
+  body: z.object({
+    tournamentName: z.string({
+      required_error: "Tournament name is required"
+    }),
+    matchNumber: z.number({
+      required_error: "Match number is required"
+    })
+  })
+})), async (req, res) => {
+  try {
+    const json = req.body;
+    const data = await getTeamsInMatch(json.tournamentName, json.matchNumber);
+    res.status(200).json({
+      data: data
+    }).end(); 
+  } catch (e) {
+    if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      res.status(400).json({ e })
+    }
+  }
 })
 
 // Returns the number of team performances for a specific team in a specific match for a specific tournament
-app.post("/getRecordsCount", async (req, res) => {
-  const json = req.body;
-  const data = await getRecordsCount(json.tournamentName, json.matchNumber, json.teamNumber);
-  res.status(200).json({
-    data: data
-  }).end(); 
+app.post("/getRecordsCount", validate(z.object({
+  body: z.object({
+    tournamentName: z.string({
+      required_error: "Tournament name is required"
+    }),
+    matchNumber: z.number({
+      required_error: "Match number is required"
+    }),
+    teamName: z.string({
+      required_error: "Team name is required"
+    })
+  })
+})), async (req, res) => {
+  try {
+    const json = req.body;
+    const data = await getRecordsCount(json.tournamentName, json.matchNumber, json.teamName);
+    res.status(200).json({
+      data: data
+    }).end(); 
+  } catch (e) {
+    if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      res.status(400).json({ e })
+    }
+  }
 })
 
 // Returns all the team performances for a specific team
-app.post("/getTeamMatches", async (req, res) => {
-  const json = req.body;
-  const data = await getTeamMatches(json.tournamentName, json.teamNumber);
-  res.status(200).json({
-    data: data
-  }).end(); 
+app.post("/getMatchesWithTeam", validate(z.object({
+  body: z.object({
+    tournamentName: z.string({
+      required_error: "Tournament name is required"
+    }),
+    teamName: z.string({
+        required_error: "Team name is required"
+    })
+  })
+  })), async (req, res) => {
+    try {
+      const json = req.body;
+      const data = await getMatchesWithTeam(json.tournamentName, json.teamName);
+      res.status(200).json({
+        data: data
+      }).end(); 
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.status(400).json({ e })
+      }
+    }
 })
 
+app.post("/getMatchNumbers", validate(z.object({
+  body: z.object({
+    tournamentName: z.string({
+        required_error: "Tournament name is required"
+      }),
+    })
+  })), async (req, res) => {
+    try {
+      const json = req.body;
+      const data = await getMatchNumbers(json.tournamentName);
+      res.status(200).json({
+        data: data
+      }).end(); 
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.status(400).json({ e })
+      }
+    }
+  })
+
 // Returns all of the team names in a given tournament
-app.post("/getTeamNames", async (req, res) => {
-  const json = req.body;
-  const data = await getTeamNames(json.tournamentName);
-  res.status(200).json({
-    data: data
-  }).end(); 
+app.post("/getTeamNames", validate(z.object({
+  body: z.object({
+    tournamentName: z.string({
+        required_error: "Tournament name is required"
+      }),
+    })
+  })), async (req, res) => {
+    try {
+      const json = req.body;
+      const data = await getTeamNames(json.tournamentName);
+      res.status(200).json({
+        data: data
+      }).end(); 
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.status(400).json({ e })
+      }
+    }
+  })
+
+// Returns the number of matches in a tournament
+app.post("/getNumberOfMatches", validate(z.object({
+  body: z.object({
+    tournamentName: z.string({
+        required_error: "Tournament name is required"
+      }),
+    })
+  })), async (req, res) => {
+    try {
+      const json = req.body;
+      const data = await getNumberOfMatches(json.tournamentName);
+      res.status(200).json({
+        data: data
+      }).end(); 
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.status(400).json({ e })
+      }
+    }
 })
 
 // Creates a new team performance
 app.post("/putNewTeamPerformance", async (req, res) => {
   const json = req.body;
-
   await putNewTeamPerformance(json);
   console.log("The Bard's Song in the Forest by Blind Guardian and team performance added ", req.body);
   res.status(200).end();
@@ -161,12 +349,8 @@ module.exports = app;
 
 /* 
 TODO List:
-Handle errors and faulty inputs
-Not for me: require that schemas have tournament name, matchnumber, team number
-*/ 
-
-// get match numbers overall
-// get maximums -> how do you handle sliders out of ten?
-// get averages for entire schema
-
-// Try catches
+  Handle errors for posting
+  wrap with try catch and return jon, add error variable to every response, maybe status code
+  get maximums -> how do you handle sliders out of ten?
+  get averages for entire schema
+*/

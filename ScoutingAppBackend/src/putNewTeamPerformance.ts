@@ -10,7 +10,7 @@ export async function putNewTeamPerformance(json: any) {
   const parallelTeamPerf = await prisma.teamPerformance.findMany({
     where: {
       match: {tournament: {title: json.tournamentName}, matchNumber: json.matchNumber},
-      teamNumber: json.teamNumber
+      teamName: json.teamName
     }
   });
 
@@ -54,7 +54,7 @@ export async function putNewTeamPerformance(json: any) {
     // Creates a new team performance based on the input given in the json file from the scout
     const teamPerf = await prisma.teamPerformance.create({
       data: {
-        teamNumber: json.teamNumber as number,
+        teamName: json.teamName as string,
         jsonScoutInput: json.jsonValues,
         matchId: match.id
       },

@@ -10,14 +10,14 @@ export async function getTeamNames(tournamentName: string) {
         },
       })
 
-      let returnSet: Set<number> = new Set(); 
+      let returnSet: Set<string> = new Set(); 
 
       // Iterates through the found team performances and adds a team number if it has not been included already
       for(let i = 0; i < teamPerformances.length; i++) {
-        var currentNumber = teamPerformances[i].teamNumber as number;
+        var currentName = teamPerformances[i].teamName as string;
 
-        if (currentNumber != null) {
-            returnSet.add(currentNumber);
+        if ((currentName != null) && (currentName != undefined)) {
+            returnSet.add(currentName);
         }
 
     }
