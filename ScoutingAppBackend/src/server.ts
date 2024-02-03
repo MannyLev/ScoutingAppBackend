@@ -350,7 +350,7 @@ module.exports = app;
 /* 
 TODO List:
   Handle errors for posting
-  wrap with try catch and return jon, add error variable to every response, maybe status code
-  get maximums -> how do you handle sliders out of ten?
+  wrap with try catch and return json, add error variable to every response, maybe status code
+  get maximums
   get averages for entire schema
 */
