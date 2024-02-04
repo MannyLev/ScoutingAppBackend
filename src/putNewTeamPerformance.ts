@@ -1,6 +1,7 @@
 import { JsonObject, JsonValue } from "@prisma/client/runtime/library";
 import { prisma } from "./index";
 
+// TODO: use the form hash instead of comparing against json every time
 export async function putNewTeamPerformance(json: any) {
 
   var identicalTeamPerf = false;

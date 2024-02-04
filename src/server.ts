@@ -18,6 +18,9 @@ import { getTeamNames } from "./getTeamNames";
 import { getTeamsInMatch } from "./getTeamsInMatch";
 import { getTeamPerformance } from "./getTeamPerformance";
 import { getMatchNumbers } from "./getMatchNumbers";
+import { getSchemaMaxima } from "./getSchemaMaxima";
+import { getTeamOverview } from "./getTeamOverview";
+import { getNumericFields } from "./getNumericFields";
 
 const app = express();
 app.use(bodyParser.json());
@@ -329,6 +332,63 @@ app.post("/getNumberOfMatches", validate(z.object({
     }
 })
 
+// Returns each numeric field
+app.post("/getNumericFields", validate(z.object({
+  body: z.object({
+    tournamentName: z.string({
+      required_error: "Tournament name is required"
+    }),
+  })
+})), async (req, res) => {
+  try {
+    const json = req.body
+    const data = await getNumericFields(json.tournamentName)
+    
+    res.status(200).json({ data })
+  } catch(e) {
+    if (e instanceof Prisma.PrismaClientKnownRequestError) res.status(400).json({ e })
+  }
+})
+
+// Returns the maximum value present across all performances for each numeric field
+app.post("/getSchemaMaxima", validate(z.object({
+  body: z.object({
+    tournamentName: z.string({
+      required_error: "Tournament name is required"
+    }),
+  })
+})), async (req, res) => {
+  try {
+    const json = req.body
+    const data = await getSchemaMaxima(json.tournamentName)
+    
+    res.status(200).json({ data })
+  } catch(e) {
+    if (e instanceof Prisma.PrismaClientKnownRequestError) res.status(400).json({ e })
+  }
+})
+
+app.post("/getTeamOverview", validate(z.object({
+  body: z.object({
+    tournamentName: z.string({
+      required_error: "Tournament name is required"
+    }),
+    teamName: z.string({
+        required_error: "Team name is required"
+    })
+  })
+})), async (req, res) => {
+  try {
+    const json = req.body
+    const data = await getTeamOverview(json.tournamentName, json.teamName)
+
+    res.status(200).json({ data })
+  } catch(e){
+    if (e instanceof Prisma.PrismaClientKnownRequestError) res.status(400).json({ e })
+  }
+})
+
+// TODO: zod
 // Creates a new team performance
 app.post("/putNewTeamPerformance", async (req, res) => {
   const json = req.body;
@@ -353,4 +413,5 @@ TODO List:
   wrap with try catch and return json, add error variable to every response, maybe status code
   get maximums
   get averages for entire schema
+  address todo at top of put new team performance
 */
