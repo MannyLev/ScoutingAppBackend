@@ -5,8 +5,7 @@ import { prisma } from "./index";
 export async function putNewTeamPerformance(json: any) {
 
   var identicalTeamPerf = false;
-  var stringifiedCurrentJsonValues = JSON.stringify(json.jsonValues as JsonObject); // is this cool
-
+  var uploadedHash = json.jsonValues.hash; // TODO: Make sure this is the correct name used
   
   const parallelTeamPerf = await prisma.teamPerformance.findMany({
     where: {
@@ -16,11 +15,12 @@ export async function putNewTeamPerformance(json: any) {
   });
 
   for (let i = 0; i < parallelTeamPerf.length; i++) {
-    var isSame = JSON.stringify(parallelTeamPerf[i].jsonScoutInput as JsonObject) === stringifiedCurrentJsonValues;
+    var isSame = uploadedHash === parallelTeamPerf[i].jsonValues.hash;
     if (isSame) {
       identicalTeamPerf = true;
     }
   }
+  
   if (!identicalTeamPerf) {
     // Creates a tournament if it does not exist with the given tournament name
     const tournament = await prisma.tournament.upsert({
