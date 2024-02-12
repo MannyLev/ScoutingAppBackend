@@ -7,13 +7,9 @@ export async function getMatchNumbers(tournamentName: string) {
         }
     })
 
-    let returnSet: Set<number> = new Set(); 
+    const matchNumbers = matches.map((match) => match.matchNumber)
 
-    for (let i = 0; i < matches.length; i++) {
-        if ((matches[i] != null) && (matches[i] != undefined)) {
-            returnSet.add(matches[i].matchNumber);
-        }
-    }
-    const returnArray = Array.from(returnSet);
-    return returnArray;
+    console.log({ matchNumbers })
+
+    return matchNumbers
 }
