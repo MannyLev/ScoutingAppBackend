@@ -406,11 +406,35 @@ app.post("/getTeamOverview", validate(z.object({
 
 // TODO: zod
 // Creates a new team performance
-app.post("/putNewTeamPerformance", async (req, res) => {
-  const json = req.body;
+app.post("/putNewTeamPerformance", validate(z.object({
+  body: z.object({
+    tournamentName: z.string({
+      required_error: "Tournament name is required"
+    }),
+    teamName: z.string({
+        required_error: "Team name is required"
+      }),
+      matchNumber: z.string({
+        required_error: "Match number is required"
+      }),
+      clientFormId: z.string({
+        required_error: "clientFormId is required"
+      }),
+      jsonValues: z.string({
+        required_error: "jsonValues is required"
+      }),
+    })
+  }))), async (req, res) => {
+  try {
+    const json = req.body;
   await putNewTeamPerformance(json);
   console.log("The Bard's Song in the Forest by Blind Guardian and team performance added ", req.body);
   res.status(200).end();
+  } catch (e) {
+    if (e instanceof Prisma.PrismaClientKnownRequestError) res.status(400).json({ e })
+
+  }
+  
 })
 
 app.get("/", async (req, res) => {
