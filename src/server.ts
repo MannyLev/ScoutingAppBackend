@@ -430,9 +430,7 @@ app.post("/putNewTeamPerformance", validate(z.object({
       clientFormId: z.string({
         required_error: "clientFormId is required"
       }),
-      jsonValues: z.string({
-        required_error: "jsonValues is required"
-      }),
+      jsonValues: z.record(z.string(), z.string()),
     })
   }))), async (req, res) => {
   try {
