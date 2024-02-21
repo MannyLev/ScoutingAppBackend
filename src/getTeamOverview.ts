@@ -9,8 +9,6 @@ export async function getTeamOverview(tournamentName: string, teamName: string) 
     })
 
     const performancesJson = teamPerformances.map(performance => performance.jsonScoutInput)
-
-    console.log({ performancesJson })
     
     return performancesJson
 }

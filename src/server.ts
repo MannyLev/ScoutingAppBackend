@@ -30,8 +30,6 @@ app.use(cors({
   origin: "*"
 }));
 
-
-
 // Gets all of the values under the "field" key for a specific team
 app.post("/getTeamFields", validate(z.object({
   body: z.object({
@@ -48,8 +46,8 @@ app.post("/getTeamFields", validate(z.object({
 })),async (req, res) => {
  try {
   const json = req.body;
+  console.log("Nothin' But A Good Time by Poison and getting team fields ", json);
   const data = await getTeamFields(json.field, json.tournamentName, json.teamName);
-  console.log("Nothin' But A Good Time by Poison and values found ", (await data).toString());
   res.status(200).json({
     data: data
   }).end(); 
@@ -107,7 +105,6 @@ app.post("/getTeamPerformanceField", validate(z.object({
 })), async (req, res) => {
   try {
     const json = req.body;
-    console.log(json);
     console.log("Heartwork by Carcass and items requested ", json);
     const data = await getTeamPerformanceField(json.field, json.tournamentName, json.teamName, json.matchNumber);
     res.status(200).json({
@@ -133,6 +130,7 @@ app.post("/getMatch", validate(z.object({
 })), async (req, res) => {
   try {
     const json = req.body;
+    console.log("Don't Look Back in Anger by Oasis and getting match", json)
     const data = await getMatch(json.tournamentName, json.matchNumber);
     res.status(200).json({
       data: data
@@ -160,6 +158,7 @@ app.post("/getTeamPerformance", validate(z.object({
 })), async (req, res) => {
   try {
     const json = req.body;
+    console.log("Dark Necessities by Red Hot Chili Peppers and getting team performance", json)
     const data = await getTeamPerformance(json.tournamentName, json.matchNumber, json.teamName);
     res.status(200).json({
       data: data
@@ -185,6 +184,7 @@ app.post("/getMatchNumbersForTeam", validate(z.object({
 })), async (req, res) => {
   try {
     const json = req.body;
+    console.log("Santeria by Sublime and getting match numbers", json)
     const data = await getMatchNumbersForTeam(json.tournamentName, json.teamName);
     res.status(200).json({
       data: data
@@ -209,6 +209,7 @@ app.post("/getTeamsInMatch", validate(z.object({
 })), async (req, res) => {
   try {
     const json = req.body;
+    console.log("Island in the Sun by Weezer and getting teams in match", json)
     const data = await getTeamsInMatch(json.tournamentName, json.matchNumber);
     res.status(200).json({
       data: data
@@ -236,6 +237,7 @@ app.post("/getRecordsCount", validate(z.object({
 })), async (req, res) => {
   try {
     const json = req.body;
+    console.log("Song 2 by Blur and getting records count", json)
     const data = await getRecordsCount(json.tournamentName, json.matchNumber, json.teamName);
     res.status(200).json({
       data: data
@@ -260,6 +262,7 @@ app.post("/getMatchesWithTeam", validate(z.object({
   })), async (req, res) => {
     try {
       const json = req.body;
+      console.log("Pardon Me by Incubus and getting matches with team", json)
       const data = await getMatchesWithTeam(json.tournamentName, json.teamName);
       res.status(200).json({
         data: data
@@ -280,6 +283,7 @@ app.post("/getMatchNumbers", validate(z.object({
   })), async (req, res) => {
     try {
       const json = req.body;
+      console.log("Alive by Pearl Jam and getting match numbers", json)
       const data = await getMatchNumbers(json.tournamentName);
       res.status(200).json({
         data: data
@@ -301,6 +305,7 @@ app.post("/getTeamNames", validate(z.object({
   })), async (req, res) => {
     try {
       const json = req.body;
+      console.log("Trouble by Cage the Elephant and getting team names", json)
       const data = await getTeamNames(json.tournamentName);
       res.status(200).json({
         data: data
@@ -322,6 +327,7 @@ app.post("/getNumberOfMatches", validate(z.object({
   })), async (req, res) => {
     try {
       const json = req.body;
+      console.log("Gone Away by The Offspring and getting number of matches", json)
       const data = await getNumberOfMatches(json.tournamentName);
       res.status(200).json({
         data: data
@@ -343,6 +349,7 @@ app.post("/getNumericFields", validate(z.object({
   })), async (req, res) => {
   try {
     const json = req.body
+    console.log("Morning Glory by Oasis and getting numeric fields", json)
     const data = await getNumericFields(json.tournamentName)
     res.status(200).json({ data })
   } catch(e) {
@@ -377,7 +384,9 @@ app.post("/getSchemaAverages", validate(z.object({
 })), async (req, res) => {
   try {
     const json = req.body
-    const data = await getSchemaAverages(json.tournamentName)
+    console.log("Californication by Red Hot Chili Peppers and getting schema maxima", json)
+    const data = await getSchemaMaxima(json.tournamentName)
+    
     res.status(200).json({ data })
   } catch(e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) res.status(400).json({ e })
@@ -396,6 +405,7 @@ app.post("/getTeamOverview", validate(z.object({
   })), async (req, res) => {
   try {
     const json = req.body
+    console.log("Like a Stone by Audioslave and getting team overview", json)
     const data = await getTeamOverview(json.tournamentName, json.teamName)
 
     res.status(200).json({ data })
@@ -428,7 +438,7 @@ app.post("/putNewTeamPerformance", validate(z.object({
   try {
     const json = req.body;
   await putNewTeamPerformance(json);
-  console.log("The Bard's Song in the Forest by Blind Guardian and team performance added ", req.body);
+  console.log("The Bard's Song in the Forest by Blind Guardian and team performance added", req.body);
   res.status(200).end();
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) res.status(400).json({ e })
