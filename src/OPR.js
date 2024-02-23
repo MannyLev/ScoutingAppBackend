@@ -11,4 +11,6 @@ export async function OPR(json) {
 
 // For each match, 
 
+// TODO: Do something similar to see what percentage they are above average team in offense, defense, and offense - defense
+
 // https://github.com/Riteka/FRCBoardProj-OPR-DPR-CCWM/blob/master/API%20Version.py
